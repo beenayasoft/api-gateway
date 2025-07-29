@@ -5,7 +5,7 @@ import asyncio
 import logging
 from typing import Dict, Any
 from fastapi import FastAPI, Request, HTTPException, status, Depends
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 import httpx
 import uvicorn
@@ -53,26 +53,63 @@ class ServiceRouter:
         1. Vérifie d'abord le mapping de compatibilité
         2. Puis la configuration normale des services
         """
+        logger.info(f"🔍 RESOLVE_SERVICE: Début résolution pour path='{path}'")
         
         # 1. Vérification mapping de compatibilité
+        logger.info(f"🔍 STEP 1: Vérification mapping exact pour '{path}'")
         if path in self.legacy_mapping:
             service_name, target_path = self.legacy_mapping[path]
+            logger.info(f"✅ STEP 1: Mapping exact trouvé - service='{service_name}', target='{target_path}'")
             if service_name in self.services:
-                return self.services[service_name]["url"], target_path
+                service_url = self.services[service_name]["url"]
+                logger.info(f"✅ STEP 1: Service trouvé - service_url='{service_url}'")
+                logger.info(f"✅ RESOLVE_SERVICE: Retour STEP 1 - url='{service_url}', path='{target_path}'")
+                return service_url, target_path
+            else:
+                logger.error(f"❌ STEP 1: Service '{service_name}' non trouvé dans SERVICES")
+        else:
+            logger.info(f"ℹ️ STEP 1: Pas de mapping exact trouvé pour '{path}'")
         
         # 2. Vérification mapping par préfixe (pour routes dynamiques)
+        logger.info(f"🔍 STEP 2: Vérification mapping par préfixe pour '{path}'")
         for legacy_route, (service_name, new_route) in self.legacy_mapping.items():
-            if path.startswith(legacy_route.rstrip('/')):
+            legacy_route_stripped = legacy_route.rstrip('/')
+            logger.debug(f"🔍 STEP 2: Test préfixe '{legacy_route}' (stripped: '{legacy_route_stripped}') vs '{path}'")
+            
+            if path.startswith(legacy_route_stripped):
+                logger.info(f"✅ STEP 2: Préfixe match - route='{legacy_route}', service='{service_name}', new_route='{new_route}'")
+                
                 if service_name in self.services:
                     # Remplacer le préfixe
-                    target_path = path.replace(legacy_route.rstrip('/'), new_route.rstrip('/'))
-                    return self.services[service_name]["url"], target_path
+                    new_route_stripped = new_route.rstrip('/')
+                    target_path = path.replace(legacy_route_stripped, new_route_stripped)
+                    service_url = self.services[service_name]["url"]
+                    
+                    logger.info(f"✅ STEP 2: Transformation - '{legacy_route_stripped}' -> '{new_route_stripped}'")
+                    logger.info(f"✅ STEP 2: Path final - '{path}' -> '{target_path}'")
+                    logger.info(f"✅ STEP 2: Service URL - '{service_url}'")
+                    logger.info(f"✅ RESOLVE_SERVICE: Retour STEP 2 - url='{service_url}', path='{target_path}'")
+                    return service_url, target_path
+                else:
+                    logger.error(f"❌ STEP 2: Service '{service_name}' non trouvé dans SERVICES")
+        
+        logger.info(f"ℹ️ STEP 2: Aucun préfixe match trouvé pour '{path}'")
         
         # 3. Configuration normale des services
+        logger.info(f"🔍 STEP 3: Vérification configuration normale des services pour '{path}'")
         for service_name, config in self.services.items():
+            logger.debug(f"🔍 STEP 3: Test service '{service_name}' - routes: {config['routes']}")
             for route_prefix in config["routes"]:
+                logger.debug(f"🔍 STEP 3: Test route_prefix '{route_prefix}' vs '{path}'")
                 if path.startswith(route_prefix):
-                    return config["url"], path
+                    service_url = config["url"]
+                    logger.info(f"✅ STEP 3: Match trouvé - service='{service_name}', route_prefix='{route_prefix}'")
+                    logger.info(f"✅ RESOLVE_SERVICE: Retour STEP 3 - url='{service_url}', path='{path}'")
+                    return service_url, path
+        
+        logger.error(f"❌ RESOLVE_SERVICE: Aucune route trouvée pour '{path}'")
+        logger.error(f"❌ RESOLVE_SERVICE: LEGACY_MAPPING disponible: {list(self.legacy_mapping.keys())}")
+        logger.error(f"❌ RESOLVE_SERVICE: SERVICES disponible: {list(self.services.keys())}")
         
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -148,19 +185,28 @@ async def get_current_user(request: Request):
     Dependency pour extraire et valider l'utilisateur à partir du JWT
     Compatible avec le frontend existant
     """
+    logger.info(f"🔐 GET_CURRENT_USER: START - {request.method} {request.url.path}")
     
     # Vérifier si la route est publique
-    if JWTMiddleware.is_public_route(request.url.path, request.method):
-        logger.info(f"Route publique accédée: {request.method} {request.url.path}")
+    is_public = JWTMiddleware.is_public_route(request.url.path, request.method)
+    logger.info(f"🔐 GET_CURRENT_USER: Route publique check - {is_public}")
+    
+    if is_public:
+        logger.info(f"✅ GET_CURRENT_USER: Route publique accédée - {request.method} {request.url.path}")
         return None
     
     # Extraire le token
     authorization = request.headers.get("authorization")
+    logger.info(f"🔐 GET_CURRENT_USER: Authorization header - {'Present' if authorization else 'Missing'}")
+    if authorization:
+        logger.info(f"🔐 GET_CURRENT_USER: Authorization header value - {authorization[:20]}...")
+    
     token = JWTMiddleware.extract_token(authorization)
+    logger.info(f"🔐 GET_CURRENT_USER: Token extracted - {'Present' if token else 'Missing'}")
     
     if not token:
         # Pour compatibilité frontend, retourner 401 avec format attendu
-        logger.warning(f"Accès non authentifié à une route protégée: {request.method} {request.url.path}")
+        logger.warning(f"❌ GET_CURRENT_USER: Accès non authentifié à une route protégée - {request.method} {request.url.path}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token d'authentification requis",
@@ -168,7 +214,14 @@ async def get_current_user(request: Request):
         )
     
     # Valider le token et retourner les informations utilisateur
-    return JWTMiddleware.validate_token(token)
+    try:
+        logger.info(f"🔐 GET_CURRENT_USER: Validating token...")
+        user = JWTMiddleware.validate_token(token)
+        logger.info(f"✅ GET_CURRENT_USER: Token valid - user_id: {user.get('user_id')}, tenant_id: {user.get('tenant_id')}")
+        return user
+    except Exception as e:
+        logger.error(f"❌ GET_CURRENT_USER: Token validation failed - {str(e)}")
+        raise
 
 @app.get("/")
 async def gateway_info():
@@ -263,18 +316,26 @@ async def proxy_request(
     """
     Proxy intelligent avec compatibilité frontend existant
     """
+    logger.info(f"🚀 PROXY_REQUEST: START - Method: {request.method}, Path: /{path}")
+    logger.info(f"🚀 PROXY_REQUEST: Headers: {dict(request.headers)}")
+    logger.info(f"🚀 PROXY_REQUEST: Query params: {dict(request.query_params)}")
     
     # Résoudre le service cible (avec mapping de compatibilité)
     try:
+        logger.info(f"🔍 PROXY_REQUEST: Calling router.resolve_service('/{path}')")
         service_url, target_path = router.resolve_service(f"/{path}")
         
         # Log détaillé pour le débogage
-        logger.info(f"Route résolue: /{path} -> service: {service_url}, path: {target_path}")
+        logger.info(f"✅ PROXY_REQUEST: Route résolue - /{path} -> service: {service_url}, path: {target_path}")
         
         # Construire l'URL complète
         full_url = f"{service_url}{target_path}"
+        logger.info(f"✅ PROXY_REQUEST: URL complète construite - {full_url}")
+        
     except Exception as e:
-        logger.error(f"Erreur lors de la résolution de la route /{path}: {str(e)}")
+        logger.error(f"❌ PROXY_REQUEST: Erreur lors de la résolution de la route /{path}: {str(e)}")
+        logger.error(f"❌ PROXY_REQUEST: Exception type: {type(e).__name__}")
+        logger.error(f"❌ PROXY_REQUEST: Exception args: {e.args}")
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Route non trouvée: /{path}"
@@ -282,6 +343,7 @@ async def proxy_request(
     
     # Préparer les headers
     headers = dict(request.headers)
+    logger.info(f"📋 PROXY_REQUEST: Headers initiaux - {headers}")
     
     # Ajouter les informations utilisateur si authentifié
     if current_user:
@@ -290,18 +352,29 @@ async def proxy_request(
         headers["X-User-Email"] = current_user.get("email", "")
         
         # LOG pour débugger
-        logger.info(f"User authenticated: {current_user['email']}, Tenant: {current_user['tenant_id']}")
+        logger.info(f"🔐 PROXY_REQUEST: User authenticated - {current_user['email']}, Tenant: {current_user['tenant_id']}")
+    else:
+        logger.info(f"🔐 PROXY_REQUEST: No user authentication")
     
     # Nettoyer les headers problématiques
     headers.pop("host", None)
     headers.pop("content-length", None)
+    logger.info(f"📋 PROXY_REQUEST: Headers nettoyés - {headers}")
     
     # Lire le body de la requête
     body = await request.body()
+    logger.info(f"📄 PROXY_REQUEST: Body length: {len(body)} bytes")
+    if body and len(body) < 1000:  # Log only small bodies
+        logger.info(f"📄 PROXY_REQUEST: Body content: {body.decode('utf-8', errors='ignore')}")
     
     # Effectuer la requête vers le service backend
+    logger.info(f"🌐 PROXY_REQUEST: Envoi requête vers {full_url}")
     async with httpx.AsyncClient(timeout=30.0) as client:
         try:
+            logger.info(f"🌐 PROXY_REQUEST: httpx.request - method: {request.method}, url: {full_url}")
+            logger.info(f"🌐 PROXY_REQUEST: httpx.request - headers: {headers}")
+            logger.info(f"🌐 PROXY_REQUEST: httpx.request - params: {dict(request.query_params)}")
+            
             response = await client.request(
                 method=request.method,
                 url=full_url,
@@ -311,28 +384,48 @@ async def proxy_request(
             )
             
             # Logger la requête avec mapping
-            logger.info(f"Proxy: {request.method} /{path} → {full_url} ({response.status_code})")
+            logger.info(f"✅ PROXY_REQUEST: Response reçue - {request.method} /{path} → {full_url} ({response.status_code})")
+            logger.info(f"✅ PROXY_REQUEST: Response headers - {dict(response.headers)}")
             
-            # Retourner la réponse dans le format attendu par le frontend
-            return JSONResponse(
-                content=response.json() if response.content else {},
-                status_code=response.status_code
+            # Log response content if small
+            if response.content and len(response.content) < 1000:
+                logger.info(f"✅ PROXY_REQUEST: Response content - {response.content.decode('utf-8', errors='ignore')}")
+            
+            # Retourner la réponse directement sans re-sérialisation
+            logger.info(f"✅ PROXY_REQUEST: Returning response with status {response.status_code}")
+            
+            # Préparer les headers de réponse
+            response_headers = {}
+            for key, value in response.headers.items():
+                if key.lower() not in ['content-encoding', 'transfer-encoding', 'connection']:
+                    response_headers[key] = value
+            
+            return Response(
+                content=response.content,
+                status_code=response.status_code,
+                headers=response_headers,
+                media_type=response.headers.get('content-type', 'application/json')
             )
             
-        except httpx.TimeoutException:
-            logger.error(f"Timeout lors de la requête vers {service_url}")
+        except httpx.TimeoutException as e:
+            logger.error(f"❌ PROXY_REQUEST: Timeout lors de la requête vers {service_url} - {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_504_GATEWAY_TIMEOUT,
                 detail="Le service backend a mis trop de temps à répondre"
             )
         except httpx.RequestError as e:
-            logger.error(f"Erreur de communication avec {service_url}: {e}")
+            logger.error(f"❌ PROXY_REQUEST: Erreur de communication avec {service_url} - {str(e)}")
+            logger.error(f"❌ PROXY_REQUEST: RequestError details - {e.__class__.__name__}: {e}")
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail=f"Service temporairement indisponible: {str(e)}"
             )
         except Exception as e:
-            logger.error(f"Erreur inattendue lors du proxy: {e}")
+            logger.error(f"❌ PROXY_REQUEST: Erreur inattendue lors du proxy - {str(e)}")
+            logger.error(f"❌ PROXY_REQUEST: Exception type: {type(e).__name__}")
+            logger.error(f"❌ PROXY_REQUEST: Exception args: {e.args}")
+            import traceback
+            logger.error(f"❌ PROXY_REQUEST: Traceback: {traceback.format_exc()}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Erreur interne du gateway"

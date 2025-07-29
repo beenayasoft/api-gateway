@@ -48,8 +48,8 @@ DOCUMENT_SERVICE_URL=http://localhost:8004
 cd soa/api-gateway
 source venv/bin/activate  # ou venv\Scripts\activate sur Windows
 pip install -r requirements.txt
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
 ## Health Check
 
