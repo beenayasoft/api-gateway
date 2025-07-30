@@ -219,7 +219,14 @@ LEGACY_ROUTE_MAPPING = {
     "/ingredients/": ("library", "/api/ingredients/"),
     "/library/search/": ("library", "/api/search/"),
     
-    # Routes détaillées avec paramètres
+    # Routes détaillées avec paramètres (avec préfixe library)
+    "/api/library/categories/{id}/": ("library", "/api/categories/{id}/"),
+    "/api/library/fournitures/{id}/": ("library", "/api/fournitures/{id}/"),
+    "/api/library/main-oeuvre/{id}/": ("library", "/api/main-oeuvre/{id}/"),
+    "/api/library/ouvrages/{id}/": ("library", "/api/ouvrages/{id}/"),
+    "/api/library/ingredients/{id}/": ("library", "/api/ingredients/{id}/"),
+    
+    # Routes détaillées avec paramètres (sans préfixe library)
     "/api/categories/{id}/": ("library", "/api/categories/{id}/"),
     "/api/fournitures/{id}/": ("library", "/api/fournitures/{id}/"),
     "/api/main-oeuvre/{id}/": ("library", "/api/main-oeuvre/{id}/"),
@@ -250,7 +257,6 @@ DEBUG = config("DEBUG", default=False, cast=bool)
 
 # Routes publiques (pas d'authentification requise)
 PUBLIC_ROUTES = [
-    "/",
     "/health/",
     "/docs",
     "/redoc", 
@@ -265,6 +271,4 @@ PUBLIC_ROUTES = [
     "/api/quotes/vat-rates/",
     # Routes publiques pour les tests library service
     "/api/library/health/",
-    "/api/categories/",
-    "/categories/",
 ]

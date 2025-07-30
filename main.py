@@ -347,9 +347,21 @@ async def proxy_request(
     
     # Ajouter les informations utilisateur si authentifié
     if current_user:
+        # Ajout des informations utilisateur standards
         headers["X-User-ID"] = str(current_user["user_id"])
-        headers["X-Tenant-ID"] = str(current_user["tenant_id"])
         headers["X-User-Email"] = current_user.get("email", "")
+        
+        # On s'assure que le X-Tenant-ID est présent et correct.
+        # Celui du token JWT est la source de vérité et écrase toute valeur existante.
+        original_tenant_header = headers.get("X-Tenant-ID") or headers.get("x-tenant-id")
+        jwt_tenant_id = str(current_user["tenant_id"])
+        
+        if original_tenant_header and original_tenant_header != jwt_tenant_id:
+            logger.warning(f"🔐 PROXY_REQUEST: Tenant ID mismatch - Header: {original_tenant_header}, JWT: {jwt_tenant_id}")
+        
+        headers["X-Tenant-ID"] = jwt_tenant_id
+        
+        logger.info(f"🔐 PROXY_REQUEST: Tenant ID forwaded: {jwt_tenant_id}")
         
         # LOG pour débugger
         logger.info(f"🔐 PROXY_REQUEST: User authenticated - {current_user['email']}, Tenant: {current_user['tenant_id']}")

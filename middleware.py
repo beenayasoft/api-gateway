@@ -17,6 +17,11 @@ class JWTMiddleware:
         """Vérifie si une route est publique"""
         logger.info(f"🔒 IS_PUBLIC_ROUTE: Checking path='{path}', method='{method}'")
         
+        # Route racine exacte
+        if path == "/":
+            logger.info(f"✅ IS_PUBLIC_ROUTE: Root route - public")
+            return True
+        
         # Routes toujours publiques
         for public_route in PUBLIC_ROUTES:
             if path.startswith(public_route):
