@@ -195,7 +195,8 @@ LEGACY_ROUTE_MAPPING = {
     # ==================== ROUTES LIBRARY SERVICE ====================
     
     # Routes API library principales
-    "/api/library/": ("library", "/api/library/"),
+    # NOTE: Mapping générique supprimé pour éviter les conflits avec les mappings spécifiques
+    # "/api/library/": ("library", "/api/library/"),
     "/api/library/categories/": ("library", "/api/categories/"),
     "/api/library/fournitures/": ("library", "/api/fournitures/"),
     "/api/library/main-oeuvre/": ("library", "/api/main-oeuvre/"),
@@ -211,7 +212,8 @@ LEGACY_ROUTE_MAPPING = {
     "/api/ingredients/": ("library", "/api/ingredients/"),
     
     # Routes sans préfixe /api/ pour compatibilité frontend
-    "/library/": ("library", "/api/library/"),
+    # NOTE: Mapping générique supprimé pour éviter les conflits
+    # "/library/": ("library", "/api/library/"),
     "/categories/": ("library", "/api/categories/"),
     "/fournitures/": ("library", "/api/fournitures/"),
     "/main-oeuvre/": ("library", "/api/main-oeuvre/"),
@@ -220,18 +222,18 @@ LEGACY_ROUTE_MAPPING = {
     "/library/search/": ("library", "/api/search/"),
     
     # Routes détaillées avec paramètres (avec préfixe library)
-    "/api/library/categories/{id}/": ("library", "/api/categories/{id}/"),
-    "/api/library/fournitures/{id}/": ("library", "/api/fournitures/{id}/"),
-    "/api/library/main-oeuvre/{id}/": ("library", "/api/main-oeuvre/{id}/"),
-    "/api/library/ouvrages/{id}/": ("library", "/api/ouvrages/{id}/"),
-    "/api/library/ingredients/{id}/": ("library", "/api/ingredients/{id}/"),
+    "/api/library/categories/": ("library", "/api/categories/"),
+    "/api/library/fournitures/": ("library", "/api/fournitures/"),
+    "/api/library/main-oeuvre/": ("library", "/api/main-oeuvre/"),
+    "/api/library/ouvrages/": ("library", "/api/ouvrages/"),
+    "/api/library/ingredients/": ("library", "/api/ingredients/"),
     
     # Routes détaillées avec paramètres (sans préfixe library)
-    "/api/categories/{id}/": ("library", "/api/categories/{id}/"),
-    "/api/fournitures/{id}/": ("library", "/api/fournitures/{id}/"),
-    "/api/main-oeuvre/{id}/": ("library", "/api/main-oeuvre/{id}/"),
-    "/api/ouvrages/{id}/": ("library", "/api/ouvrages/{id}/"),
-    "/api/ingredients/{id}/": ("library", "/api/ingredients/{id}/"),
+    "/api/categories/": ("library", "/api/categories/"),
+    "/api/fournitures/": ("library", "/api/fournitures/"),
+    "/api/main-oeuvre/": ("library", "/api/main-oeuvre/"),
+    "/api/ouvrages/": ("library", "/api/ouvrages/"),
+    "/api/ingredients/": ("library", "/api/ingredients/"),
     
     # Routes statistiques et actions spéciales
     "/api/categories/racines/": ("library", "/api/categories/racines/"),
