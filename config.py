@@ -204,6 +204,10 @@ LEGACY_ROUTE_MAPPING = {
     "/api/library/ingredients/": ("library", "/api/ingredients/"),
     "/api/library/search/": ("library", "/api/search/"),
     
+    # Routes composite optimisées pour l'endpoint composite
+    "/api/library/composite/": ("library", "/api/composite/"),
+    "/api/library/composite/all_items/": ("library", "/api/composite/all_items/"),
+    
     # Routes directes (sans préfixe library)
     "/api/categories/": ("library", "/api/categories/"),
     "/api/fournitures/": ("library", "/api/fournitures/"),
@@ -220,6 +224,10 @@ LEGACY_ROUTE_MAPPING = {
     "/ouvrages/": ("library", "/api/ouvrages/"),
     "/ingredients/": ("library", "/api/ingredients/"),
     "/library/search/": ("library", "/api/search/"),
+    
+    # Routes composite sans préfixe /api/
+    "/library/composite/": ("library", "/api/composite/"),
+    "/library/composite/all_items/": ("library", "/api/composite/all_items/"),
     
     # Routes détaillées avec paramètres (avec préfixe library)
     "/api/library/categories/": ("library", "/api/categories/"),

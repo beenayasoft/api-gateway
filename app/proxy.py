@@ -18,67 +18,46 @@ async def proxy_request(
     current_user: dict = Depends(get_current_user)
 ):
     """
-    Proxy intelligent avec compatibilité frontend existant
+    Proxy intelligent OPTIMISÉ - Milestone 2.2: Logs réduits + Headers streamlined
     """
-    logger.info(f"🚀 PROXY_REQUEST: START - Method: {request.method}, Path: /{path}")
-    logger.info(f"🚀 PROXY_REQUEST: Headers: {dict(request.headers)}")
-    logger.info(f"🚀 PROXY_REQUEST: Query params: {dict(request.query_params)}")
+    # OPTIMISATION: Logs condensés (DEBUG level pour détails)
+    logger.debug(f"🚀 {request.method} /{path} → routing...")
     
-    # Résoudre le service cible (avec mapping de compatibilité)
+    # Résoudre le service cible (avec routage O(1) optimisé)
     try:
-        logger.info(f"🔍 PROXY_REQUEST: Calling router.resolve_service('/{path}')")
         service_url, target_path = router.resolve_service(f"/{path}")
-        
-        # Log détaillé pour le débogage
-        logger.info(f"✅ PROXY_REQUEST: Route résolue - /{path} -> service: {service_url}, path: {target_path}")
-        
-        # Construire l'URL complète
         full_url = f"{service_url}{target_path}"
-        logger.info(f"✅ PROXY_REQUEST: URL complète construite - {full_url}")
+        logger.debug(f"⚡ Route: /{path} → {full_url}")
         
     except Exception as e:
-        logger.error(f"❌ PROXY_REQUEST: Erreur lors de la résolution de la route /{path}: {str(e)}")
-        logger.error(f"❌ PROXY_REQUEST: Exception type: {type(e).__name__}")
-        logger.error(f"❌ PROXY_REQUEST: Exception args: {e.args}")
+        logger.warning(f"❌ Route non trouvée: /{path} - {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Route non trouvée: /{path}"
         )
     
-    # Préparer les headers
-    headers = dict(request.headers)
-    logger.info(f"📋 PROXY_REQUEST: Headers initiaux - {headers}")
+    # OPTIMISATION: Headers streamlined (éviter copies inutiles)
+    headers = {
+        k: v for k, v in request.headers.items() 
+        if k.lower() not in ['host', 'content-length', 'content-encoding', 'transfer-encoding']
+    }
     
-    # Ajouter les informations utilisateur si authentifié
+    # Ajouter auth headers si authentifié (optimisé)
     if current_user:
-        headers["X-User-ID"] = str(current_user["user_id"])
-        headers["X-Tenant-ID"] = str(current_user["tenant_id"])
-        headers["X-User-Email"] = current_user.get("email", "")
-        
-        # LOG pour débugger
-        logger.info(f"🔐 PROXY_REQUEST: User authenticated - {current_user['email']}, Tenant: {current_user['tenant_id']}")
-    else:
-        logger.info(f"🔐 PROXY_REQUEST: No user authentication")
+        headers.update({
+            "X-User-ID": str(current_user["user_id"]),
+            "X-Tenant-ID": str(current_user["tenant_id"]),
+            "X-User-Email": current_user.get("email", "")
+        })
+        logger.debug(f"🔐 Auth: {current_user['email']} → {current_user['tenant_id']}")
     
-    # Nettoyer les headers problématiques
-    headers.pop("host", None)
-    headers.pop("content-length", None)
-    logger.info(f"📋 PROXY_REQUEST: Headers nettoyés - {headers}")
-    
-    # Lire le body de la requête
+    # Body optimisé (sans log verbeux)
     body = await request.body()
-    logger.info(f"📄 PROXY_REQUEST: Body length: {len(body)} bytes")
-    if body and len(body) < 1000:  # Log only small bodies
-        logger.info(f"📄 PROXY_REQUEST: Body content: {body.decode('utf-8', errors='ignore')}")
+    logger.debug(f"📄 Body: {len(body)} bytes")
     
-    # Effectuer la requête vers le service backend
-    logger.info(f"🌐 PROXY_REQUEST: Envoi requête vers {full_url}")
-    async with httpx.AsyncClient(timeout=30.0) as client:
+    # OPTIMISATION: Requête streamlined avec timeout optimisé
+    async with httpx.AsyncClient(timeout=15.0) as client:  # Timeout réduit 30s → 15s
         try:
-            logger.info(f"🌐 PROXY_REQUEST: httpx.request - method: {request.method}, url: {full_url}")
-            logger.info(f"🌐 PROXY_REQUEST: httpx.request - headers: {headers}")
-            logger.info(f"🌐 PROXY_REQUEST: httpx.request - params: {dict(request.query_params)}")
-            
             response = await client.request(
                 method=request.method,
                 url=full_url,
@@ -87,22 +66,14 @@ async def proxy_request(
                 params=dict(request.query_params)
             )
             
-            # Logger la requête avec mapping
-            logger.info(f"✅ PROXY_REQUEST: Response reçue - {request.method} /{path} → {full_url} ({response.status_code})")
-            logger.info(f"✅ PROXY_REQUEST: Response headers - {dict(response.headers)}")
+            # Log condensé pour production (INFO level seulement pour erreurs)
+            logger.debug(f"✅ {request.method} /{path} → {response.status_code}")
             
-            # Log response content if small
-            if response.content and len(response.content) < 1000:
-                logger.info(f"✅ PROXY_REQUEST: Response content - {response.content.decode('utf-8', errors='ignore')}")
-            
-            # Retourner la réponse directement sans re-sérialisation
-            logger.info(f"✅ PROXY_REQUEST: Returning response with status {response.status_code}")
-            
-            # Préparer les headers de réponse
-            response_headers = {}
-            for key, value in response.headers.items():
-                if key.lower() not in ['content-encoding', 'transfer-encoding', 'connection']:
-                    response_headers[key] = value
+            # OPTIMISATION: Headers response streamlined
+            response_headers = {
+                k: v for k, v in response.headers.items()
+                if k.lower() not in ['content-encoding', 'transfer-encoding', 'connection']
+            }
             
             return Response(
                 content=response.content,
@@ -111,26 +82,21 @@ async def proxy_request(
                 media_type=response.headers.get('content-type', 'application/json')
             )
             
-        except httpx.TimeoutException as e:
-            logger.error(f"❌ PROXY_REQUEST: Timeout lors de la requête vers {service_url} - {str(e)}")
+        except httpx.TimeoutException:
+            logger.warning(f"⏱️ Timeout: {request.method} /{path} → {service_url}")
             raise HTTPException(
                 status_code=status.HTTP_504_GATEWAY_TIMEOUT,
-                detail="Le service backend a mis trop de temps à répondre"
+                detail="Service timeout"
             )
         except httpx.RequestError as e:
-            logger.error(f"❌ PROXY_REQUEST: Erreur de communication avec {service_url} - {str(e)}")
-            logger.error(f"❌ PROXY_REQUEST: RequestError details - {e.__class__.__name__}: {e}")
+            logger.warning(f"🔌 Service error: {request.method} /{path} → {service_url} - {type(e).__name__}")
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail=f"Service temporairement indisponible: {str(e)}"
+                detail="Service unavailable"
             )
         except Exception as e:
-            logger.error(f"❌ PROXY_REQUEST: Erreur inattendue lors du proxy - {str(e)}")
-            logger.error(f"❌ PROXY_REQUEST: Exception type: {type(e).__name__}")
-            logger.error(f"❌ PROXY_REQUEST: Exception args: {e.args}")
-            import traceback
-            logger.error(f"❌ PROXY_REQUEST: Traceback: {traceback.format_exc()}")
+            logger.error(f"💥 Gateway error: {request.method} /{path} - {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Erreur interne du gateway"
+                detail="Gateway error"
             )
