@@ -39,12 +39,16 @@ LEGACY_ROUTE_MAPPING = {
     "/api/auth/register/": ("auth", "/api/auth/register/"),
     "/api/auth/refresh/": ("auth", "/api/auth/refresh/"),
     "/api/auth/me/": ("auth", "/api/auth/me/"),
+    "/api/auth/users/": ("auth", "/api/auth/users/"),
+    "/api/auth/users/{id}/": ("auth", "/api/auth/users/{id}/"),
     
     # Routes auth sans préfixe /api/
     "/auth/login/": ("auth", "/api/auth/login/"),
     "/auth/register/": ("auth", "/api/auth/register/"),
     "/auth/refresh/": ("auth", "/api/auth/refresh/"),
     "/auth/me/": ("auth", "/api/auth/me/"),
+    "/auth/users/": ("auth", "/api/auth/users/"),
+    "/auth/users/{id}/": ("auth", "/api/auth/users/{id}/"),
     
     # Routes tenant
     "/api/tenants/{tenant_id}/": ("tenant", "/api/tenants/{tenant_id}/"),
@@ -79,24 +83,24 @@ LEGACY_ROUTE_MAPPING = {
     "/api/opportunities/{id}/mark_lost/": ("crm", "/api/opportunities/{id}/mark_lost/"),
     
     # Routes sans préfixe /api/ (redirection vers le nouveau module CRM)
-    "/tiers/frontend_format/": ("crm", "/api/crm/tiers/frontend_format/"),
-    "/tiers/stats/": ("crm", "/api/crm/tiers/stats/"),
-    "/tiers/{id}/": ("crm", "/api/crm/tiers/{id}/"),
-    "/tiers/{id}/vue_360/": ("crm", "/api/crm/tiers/{id}/vue_360/"),
-    "/tiers/{id}/restaurer/": ("crm", "/api/crm/tiers/{id}/restore/"),
-    "/tiers/": ("crm", "/api/crm/tiers/"),
-    "/clients/": ("crm", "/api/crm/tiers/"),
-    "/prospects/": ("crm", "/api/crm/tiers/"),
-    "/fournisseurs/": ("crm", "/api/crm/tiers/"),
+    "/tiers/frontend_format/": ("crm", "/api/tiers/frontend_format/"),
+    "/tiers/stats/": ("crm", "/api/tiers/stats/"),
+    "/tiers/{id}/": ("crm", "/api/tiers/{id}/"),
+    "/tiers/{id}/vue_360/": ("crm", "/api/tiers/{id}/vue_360/"),
+    "/tiers/{id}/restaurer/": ("crm", "/api/tiers/{id}/restore/"),
+    "/tiers/": ("crm", "/api/tiers/"),
+    "/clients/": ("crm", "/api/tiers/"),
+    "/prospects/": ("crm", "/api/tiers/"),
+    "/fournisseurs/": ("crm", "/api/tiers/"),
     
     # Routes opportunités sans préfixe /api/
-    "/opportunities/": ("crm", "/api/crm/opportunities/"),
-    "/opportunities/{id}/": ("crm", "/api/crm/opportunities/{id}/"),
-    "/opportunities/stats/": ("crm", "/api/crm/opportunities/stats/"),
-    "/opportunities/kanban/": ("crm", "/api/crm/opportunities/kanban/"),
-    "/opportunities/{id}/update_stage/": ("crm", "/api/crm/opportunities/{id}/update_stage/"),
-    "/opportunities/{id}/mark_won/": ("crm", "/api/crm/opportunities/{id}/mark_won/"),
-    "/opportunities/{id}/mark_lost/": ("crm", "/api/crm/opportunities/{id}/mark_lost/"),
+    "/opportunities/": ("crm", "/api/opportunities/"),
+    "/opportunities/{id}/": ("crm", "/api/opportunities/{id}/"),
+    "/opportunities/stats/": ("crm", "/api/opportunities/stats/"),
+    "/opportunities/kanban/": ("crm", "/api/opportunities/kanban/"),
+    "/opportunities/{id}/update_stage/": ("crm", "/api/opportunities/{id}/update_stage/"),
+    "/opportunities/{id}/mark_won/": ("crm", "/api/opportunities/{id}/mark_won/"),
+    "/opportunities/{id}/mark_lost/": ("crm", "/api/opportunities/{id}/mark_lost/"),
     
     # Routes devis (Document Service)
     "/api/devis/": ("documents", "/api/quotes/"),
