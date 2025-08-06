@@ -36,6 +36,7 @@ app.add_middleware(
         "http://127.0.0.1:3000",
         ".vercel.app",  # Vercel
         "https://*.vercel.app",  # Vercel wildcard
+        "https://beefront.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
