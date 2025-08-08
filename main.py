@@ -34,6 +34,7 @@ app.add_middleware(
         "http://127.0.0.1:8080",
         "http://localhost:3000",  # React standard
         "http://127.0.0.1:3000",
+        "https://beefront-production.up.railway.app"
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
