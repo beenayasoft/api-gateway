@@ -3,3 +3,4 @@ uvicorn[standard]==0.24.0
 httpx==0.25.2
 pyjwt==2.8.0
 python-decouple==3.8
+setuptools>=65.0
