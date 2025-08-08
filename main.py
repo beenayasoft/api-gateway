@@ -27,22 +27,23 @@ app = FastAPI(
 )
 
 # ✅ CONFIGURATION CORS POUR LE FRONTEND
+from fastapi.middleware.cors import CORSMiddleware
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:8080",  # Frontend Vite
+        "http://localhost:8080",
         "http://127.0.0.1:8080",
-        "http://localhost:3000",  # React standard
+        "http://localhost:3000",
         "http://127.0.0.1:3000",
-        ".vercel.app",  # Vercel
-        "https://*.vercel.app",  # Vercel wildcard
-        "https://beefront.vercel.app",
-        "https://beefront-kp1aaxqfz-beenaya.vercel.app/",
+        "https://beefront-kp1aaxqfz-beenaya.vercel.app",  # ✅ sans le slash final
+        "https://beefront.vercel.app",  # ✅ si tu l’utilises aussi
     ],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allow_headers=["*", "X-Tenant-ID", "x-tenant-id"],  # Ajout explicite
+    allow_methods=["*"],  # autorise tout (OPTIONS inclus)
+    allow_headers=["*", "X-Tenant-ID", "x-tenant-id"],  # garde les headers personnalisés
 )
+
 
 class ServiceRouter:
     """Router intelligent avec compatibilité frontend existant"""
