@@ -26,17 +26,19 @@ def create_app() -> FastAPI:
     )
     
     # Configuration CORS pour le frontend
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=[
-            "http://localhost:8080",  # Frontend Vite
-            "http://127.0.0.1:8080",
-            "http://localhost:3000",  # React standard
-            "http://127.0.0.1:3000",
-        ],
-        allow_credentials=True,
-        allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-        allow_headers=["*", "X-Tenant-ID", "x-tenant-id"],  # Ajout explicite
+   app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:8080",
+        "http://127.0.0.1:8080",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "https://beefront-kp1aaxqfz-beenaya.vercel.app",  # ✅ sans le slash final
+        "https://beefront.vercel.app",  # ✅ si tu l’utilises aussi
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],  # autorise tout (OPTIONS inclus)
+    allow_headers=["*", "X-Tenant-ID", "x-tenant-id"],  # garde les headers personnalisés
     )
     
     # Inclure les routes statiques
