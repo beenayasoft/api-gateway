@@ -6,12 +6,12 @@ from decouple import config
 # Services backend avec mapping de compatibilité
 SERVICES = {
     "tenant": {
-        "url": config("TENANT_SERVICE_URL", default="http://localhost:8001"),
+        "url": config("TENANT_SERVICE_URL", default="https://tenant-service-production.up.railway.app"),
         "health": "/health/",
         "routes": ["/api/tenants/"]
     },
     "auth": {
-        "url": config("AUTH_SERVICE_URL", default="http://localhost:8002"), 
+        "url": config("AUTH_SERVICE_URL", default="https://auth-service-production-9817.up.railway.app"), 
         "health": "/health/",
         "routes": ["/api/auth/"]
     },
