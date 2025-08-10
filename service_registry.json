@@ -1,0 +1,85 @@
+{
+  "auth": {
+    "auth-1": {
+      "service_name": "auth",
+      "instance_id": "auth-1",
+      "host": "localhost",
+      "port": 8002,
+      "health_endpoint": "/health/",
+      "routes": [
+        "/api/auth/"
+      ],
+      "status": "healthy",
+      "last_heartbeat": "2025-08-10T18:06:01.247687",
+      "registration_time": "2025-08-10T18:05:59.786036",
+      "metadata": {
+        "type": "default",
+        "version": "1.0",
+        "scheme": "http"
+      }
+    }
+  },
+  "tenant": {
+    "tenant-1": {
+      "service_name": "tenant",
+      "instance_id": "tenant-1",
+      "host": "localhost",
+      "port": 8001,
+      "health_endpoint": "/health/",
+      "routes": [
+        "/api/tenants/"
+      ],
+      "status": "healthy",
+      "last_heartbeat": "2025-08-10T18:06:01.139629",
+      "registration_time": "2025-08-10T18:05:59.787125",
+      "metadata": {
+        "type": "default",
+        "version": "1.0",
+        "scheme": "http"
+      }
+    }
+  },
+  "crm": {
+    "crm-1": {
+      "service_name": "crm",
+      "instance_id": "crm-1",
+      "host": "localhost",
+      "port": 8003,
+      "health_endpoint": "/health/",
+      "routes": [
+        "/api/crm/",
+        "/api/tiers/",
+        "/api/opportunities/"
+      ],
+      "status": "healthy",
+      "last_heartbeat": "2025-08-10T18:06:01.142460",
+      "registration_time": "2025-08-10T18:05:59.787821",
+      "metadata": {
+        "type": "default",
+        "version": "1.0",
+        "scheme": "http"
+      }
+    }
+  },
+  "library": {
+    "library-1": {
+      "service_name": "library",
+      "instance_id": "library-1",
+      "host": "localhost",
+      "port": 8005,
+      "health_endpoint": "/health/",
+      "routes": [
+        "/api/library/",
+        "/api/categories/"
+      ],
+      "status": "healthy",
+      "last_heartbeat": "2025-08-10T18:06:01.141129",
+      "registration_time": "2025-08-10T18:05:59.788496",
+      "metadata": {
+        "type": "default",
+        "version": "1.0",
+        "scheme": "http"
+      }
+    }
+  }
+}

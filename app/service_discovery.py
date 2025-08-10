@@ -6,17 +6,10 @@ import logging
 from typing import Dict, Any, Tuple, Optional
 from urllib.parse import urlparse
 from fastapi import HTTPException, status
+from decouple import config
 
 from .service_registry import service_registry, ServiceInstance
-from config import (
-    LEGACY_ROUTE_MAPPING, 
-    PUBLIC_ROUTES,
-    SERVICES,
-    AUTH_SERVICE_URL,
-    TENANT_SERVICE_URL,
-    CRM_SERVICE_URL,
-    LIBRARY_SERVICE_URL
-)
+from config import LEGACY_ROUTE_MAPPING, PUBLIC_ROUTES
 
 logger = logging.getLogger(__name__)
 
@@ -258,34 +251,48 @@ class ServiceDiscovery:
         Pour assurer la rétrocompatibilité pendant la migration
         """
         service_configs = [
-            ("auth", "auth-1", AUTH_SERVICE_URL, ["/api/auth/"]),
-            ("tenant", "tenant-1", TENANT_SERVICE_URL, ["/api/tenants/"]),
-            ("crm", "crm-1", CRM_SERVICE_URL, ["/api/crm/", "/api/tiers/", "/api/opportunities/"]),
-            ("library", "lib-1", LIBRARY_SERVICE_URL, ["/api/library/", "/api/categories/"])
+            {
+                "name": "auth",
+                "url": config('AUTH_SERVICE_URL', default='http://localhost:8002'),
+                "routes": ["/api/auth/"]
+            },
+            {
+                "name": "tenant",
+                "url": config('TENANT_SERVICE_URL', default='http://localhost:8001'),
+                "routes": ["/api/tenants/"]
+            },
+            {
+                "name": "crm",
+                "url": config('CRM_SERVICE_URL', default='http://localhost:8003'),
+                "routes": ["/api/crm/", "/api/tiers/", "/api/opportunities/"]
+            },
+            {
+                "name": "library",
+                "url": config('LIBRARY_SERVICE_URL', default='http://localhost:8005'),
+                "routes": ["/api/library/", "/api/categories/"]
+            }
         ]
         
-        for service_name, instance_id, service_url, routes in service_configs:
-            if not service_url:
-                continue
-                
+        for service in service_configs:
             # Parser l'URL pour extraire host et port
-            parsed_url = urlparse(service_url)
+            parsed_url = urlparse(service["url"])
             host = parsed_url.hostname
             port = parsed_url.port or (443 if parsed_url.scheme == 'https' else 80)
             
             service_registry.register_service(
-                service_name=service_name,
-                instance_id=instance_id,
+                service_name=service["name"],
+                instance_id=f"{service['name']}-1",
                 host=host,
                 port=port,
                 health_endpoint="/health/",
-                routes=routes,
+                routes=service["routes"],
                 metadata={
                     "type": "default",
                     "version": "1.0",
                     "scheme": parsed_url.scheme
                 }
             )
+            logger.info(f"📝 Service enregistré: {service['name']} @ {service['url']}")
         
         logger.info("📝 Services par défaut enregistrés pour rétrocompatibilité")
     
