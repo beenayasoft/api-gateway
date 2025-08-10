@@ -25,6 +25,10 @@ class JWTMiddleware:
         # Routes toujours publiques
         for public_route in PUBLIC_ROUTES:
             if path.startswith(public_route):
+                # Exception: /tenants/current_tenant_info/ nécessite une authentification
+                if path.startswith("/tenants/current_tenant_info"):
+                    logger.info(f"🔒 IS_PUBLIC_ROUTE: Exception - current_tenant_info requires auth")
+                    break
                 logger.info(f"✅ IS_PUBLIC_ROUTE: Match found in PUBLIC_ROUTES - '{public_route}'")
                 return True
         
@@ -33,10 +37,10 @@ class JWTMiddleware:
             logger.info(f"✅ IS_PUBLIC_ROUTE: GET tenant route - public")
             return True
             
-        # Routes VAT (explicitement publiques)
-        if path == "/api/quotes/vat-rates/" or path == "/vat-rates/":
-            logger.info(f"✅ IS_PUBLIC_ROUTE: VAT rates route - public")
-            return True
+        # Routes VAT - Supprimées (utilisation d'endpoints statiques)
+        # if path == "/api/quotes/vat-rates/" or path == "/vat-rates/":
+        #     logger.info(f"✅ IS_PUBLIC_ROUTE: VAT rates route - public")
+        #     return True
         
         logger.info(f"❌ IS_PUBLIC_ROUTE: Route not public - authentication required")
         logger.info(f"❌ IS_PUBLIC_ROUTE: Available PUBLIC_ROUTES: {PUBLIC_ROUTES}")

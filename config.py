@@ -102,6 +102,18 @@ LEGACY_ROUTE_MAPPING = {
     "/opportunities/{id}/mark_won/": ("crm", "/api/opportunities/{id}/mark_won/"),
     "/opportunities/{id}/mark_lost/": ("crm", "/api/opportunities/{id}/mark_lost/"),
     
+    # Routes contacts (redirection vers le nouveau module CRM)
+    "/api/contacts/": ("crm", "/api/contacts/"),
+    "/api/contacts/{id}/": ("crm", "/api/contacts/{id}/"),
+    "/contacts/": ("crm", "/api/contacts/"),
+    "/contacts/{id}/": ("crm", "/api/contacts/{id}/"),
+    
+    # Routes adresses (redirection vers le nouveau module CRM)
+    "/api/adresses/": ("crm", "/api/adresses/"),
+    "/api/adresses/{id}/": ("crm", "/api/adresses/{id}/"),
+    "/adresses/": ("crm", "/api/adresses/"),
+    "/adresses/{id}/": ("crm", "/api/adresses/{id}/"),
+    
     # Routes devis (Document Service)
     "/api/devis/": ("documents", "/api/quotes/"),
     "/api/devis/stats/": ("documents", "/api/quotes/stats/"),
@@ -155,9 +167,9 @@ LEGACY_ROUTE_MAPPING = {
     "/invoices/{id}/items/": ("documents", "/api/invoices/{id}/items/"),
     "/invoices/{id}/payments/": ("documents", "/api/invoices/{id}/payments/"),
     
-    # Routes pour les taux de TVA
-    "/vat-rates/": ("documents", "/api/quotes/vat-rates/"),
-    "/api/quotes/vat-rates/": ("documents", "/api/quotes/vat-rates/"),
+    # Routes pour les taux de TVA - SUPPRIMÉES (utiliser endpoints statiques)
+    # "/vat-rates/": ("documents", "/api/quotes/vat-rates/"),
+    # "/api/quotes/vat-rates/": ("documents", "/api/quotes/vat-rates/"),
     
     # Routes pour les conditions de paiement du document-service
     "/api/quotes/payment-terms/": ("documents", "/api/payment-terms/"),
@@ -258,6 +270,18 @@ LEGACY_ROUTE_MAPPING = {
     "/api/ouvrages/par_categorie/": ("library", "/api/ouvrages/par_categorie/"),
     "/api/ingredients/stats/": ("library", "/api/ingredients/stats/"),
     "/api/ingredients/par_ouvrage/": ("library", "/api/ingredients/par_ouvrage/"),
+    
+    # ==================== ROUTES LIBRARY ↔ CRM INTEGRATION ====================
+    
+    # Routes de recherche de fournisseurs (Library vers CRM)
+    "/api/library/suppliers/search/": ("crm", "/api/tiers/?relation=fournisseur"),
+    "/api/library/suppliers/{id}/": ("crm", "/api/tiers/{id}/"),
+    "/api/library/suppliers/stats/": ("crm", "/api/tiers/stats/?relation=fournisseur"),
+    
+    # Routes sans préfixe library pour compatibilité
+    "/api/suppliers/search/": ("crm", "/api/tiers/?relation=fournisseur"),
+    "/api/suppliers/{id}/": ("crm", "/api/tiers/{id}/"),
+    "/api/suppliers/stats/": ("crm", "/api/tiers/stats/?relation=fournisseur"),
 }
 
 # Configuration JWT
@@ -281,8 +305,8 @@ PUBLIC_ROUTES = [
     "/auth/register/",
     "/api/tenants/",
     "/tenants/",
-    "/vat-rates/",
-    "/api/quotes/vat-rates/",
+    # "/vat-rates/",  # Supprimé - utiliser endpoint statique
+    # "/api/quotes/vat-rates/",  # Supprimé - utiliser endpoint statique
     # Routes publiques pour les tests library service
     "/api/library/health/",
 ]

@@ -2,27 +2,55 @@
 App Factory - Configuration et création de l'application FastAPI
 """
 import logging
+import asyncio
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from config import DEBUG, GATEWAY_HOST, GATEWAY_PORT
 from .endpoints import static_router  
 from .proxy import proxy_request
+from .service_registry import service_registry
+from .service_discovery import service_discovery
 
 logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Gestionnaire de cycle de vie de l'application
+    Démarre et arrête le Service Registry
+    """
+    logger.info("🚀 Démarrage de l'API Gateway avec Service Registry")
+    
+    # Démarrer le Service Registry
+    await service_registry.start()
+    
+    # Enregistrer les services par défaut
+    await service_discovery.register_default_services()
+    
+    logger.info("✅ Service Registry initialisé")
+    
+    yield  # L'application est maintenant active
+    
+    # Cleanup au shutdown
+    logger.info("🛑 Arrêt du Service Registry")
+    await service_registry.stop()
 
 
 def create_app() -> FastAPI:
     """
     Factory pour créer l'application FastAPI avec toute sa configuration
     """
-    # Création de l'application FastAPI
+    # Création de l'application FastAPI avec lifespan
     app = FastAPI(
         title="Beenaya API Gateway", 
-        description="Point d'entrée centralisé pour l'architecture SOA avec compatibilité frontend",
-        version="1.0.0",
+        description="Point d'entrée centralisé pour l'architecture SOA avec Service Registry",
+        version="2.0.0",  # Version avec Service Registry
         docs_url="/docs" if DEBUG else None,
-        redoc_url="/redoc" if DEBUG else None
+        redoc_url="/redoc" if DEBUG else None,
+        lifespan=lifespan
     )
     
     # Configuration CORS pour le frontend
