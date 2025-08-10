@@ -4,10 +4,19 @@ Intégration du Service Registry dans l'API Gateway
 """
 import logging
 from typing import Dict, Any, Tuple, Optional
+from urllib.parse import urlparse
 from fastapi import HTTPException, status
 
 from .service_registry import service_registry, ServiceInstance
-from config import LEGACY_ROUTE_MAPPING, PUBLIC_ROUTES
+from config import (
+    LEGACY_ROUTE_MAPPING, 
+    PUBLIC_ROUTES,
+    SERVICES,
+    AUTH_SERVICE_URL,
+    TENANT_SERVICE_URL,
+    CRM_SERVICE_URL,
+    LIBRARY_SERVICE_URL
+)
 
 logger = logging.getLogger(__name__)
 
@@ -248,23 +257,34 @@ class ServiceDiscovery:
         Enregistre les services par défaut au démarrage
         Pour assurer la rétrocompatibilité pendant la migration
         """
-        default_services = [
-            ("auth", "auth-1", "localhost", 8002, "/health/", ["/api/auth/"]),
-            ("tenant", "tenant-1", "localhost", 8001, "/api/health/", ["/api/tenants/"]),
-            ("crm", "crm-1", "localhost", 8003, "/health/", ["/api/crm/", "/api/tiers/", "/api/opportunities/"]),
-            # ("documents", "docs-1", "localhost", 8004, "/health/", ["/api/quotes/", "/api/invoices/"]),  # Service arrêté
-            ("library", "lib-1", "localhost", 8005, "/health/", ["/api/library/", "/api/categories/"])
+        service_configs = [
+            ("auth", "auth-1", AUTH_SERVICE_URL, ["/api/auth/"]),
+            ("tenant", "tenant-1", TENANT_SERVICE_URL, ["/api/tenants/"]),
+            ("crm", "crm-1", CRM_SERVICE_URL, ["/api/crm/", "/api/tiers/", "/api/opportunities/"]),
+            ("library", "lib-1", LIBRARY_SERVICE_URL, ["/api/library/", "/api/categories/"])
         ]
         
-        for service_name, instance_id, host, port, health_endpoint, routes in default_services:
+        for service_name, instance_id, service_url, routes in service_configs:
+            if not service_url:
+                continue
+                
+            # Parser l'URL pour extraire host et port
+            parsed_url = urlparse(service_url)
+            host = parsed_url.hostname
+            port = parsed_url.port or (443 if parsed_url.scheme == 'https' else 80)
+            
             service_registry.register_service(
                 service_name=service_name,
                 instance_id=instance_id,
                 host=host,
                 port=port,
-                health_endpoint=health_endpoint,
+                health_endpoint="/health/",
                 routes=routes,
-                metadata={"type": "default", "version": "1.0"}
+                metadata={
+                    "type": "default",
+                    "version": "1.0",
+                    "scheme": parsed_url.scheme
+                }
             )
         
         logger.info("📝 Services par défaut enregistrés pour rétrocompatibilité")
