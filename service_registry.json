@@ -10,12 +10,13 @@
         "/api/auth/"
       ],
       "status": "healthy",
-      "last_heartbeat": "2025-08-10T18:06:01.247687",
-      "registration_time": "2025-08-10T18:05:59.786036",
+      "last_heartbeat": "2025-08-10T18:13:55.738681",
+      "registration_time": "2025-08-10T18:13:54.416451",
       "metadata": {
         "type": "default",
         "version": "1.0",
-        "scheme": "http"
+        "scheme": "http",
+        "is_production": false
       }
     }
   },
@@ -30,12 +31,13 @@
         "/api/tenants/"
       ],
       "status": "healthy",
-      "last_heartbeat": "2025-08-10T18:06:01.139629",
-      "registration_time": "2025-08-10T18:05:59.787125",
+      "last_heartbeat": "2025-08-10T18:13:55.738550",
+      "registration_time": "2025-08-10T18:13:54.417367",
       "metadata": {
         "type": "default",
         "version": "1.0",
-        "scheme": "http"
+        "scheme": "http",
+        "is_production": false
       }
     }
   },
@@ -52,12 +54,13 @@
         "/api/opportunities/"
       ],
       "status": "healthy",
-      "last_heartbeat": "2025-08-10T18:06:01.142460",
-      "registration_time": "2025-08-10T18:05:59.787821",
+      "last_heartbeat": "2025-08-10T18:13:55.738783",
+      "registration_time": "2025-08-10T18:13:54.418113",
       "metadata": {
         "type": "default",
         "version": "1.0",
-        "scheme": "http"
+        "scheme": "http",
+        "is_production": false
       }
     }
   },
@@ -73,12 +76,13 @@
         "/api/categories/"
       ],
       "status": "healthy",
-      "last_heartbeat": "2025-08-10T18:06:01.141129",
-      "registration_time": "2025-08-10T18:05:59.788496",
+      "last_heartbeat": "2025-08-10T18:13:55.736511",
+      "registration_time": "2025-08-10T18:13:54.418794",
       "metadata": {
         "type": "default",
         "version": "1.0",
-        "scheme": "http"
+        "scheme": "http",
+        "is_production": false
       }
     }
   }

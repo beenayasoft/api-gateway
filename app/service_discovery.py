@@ -277,7 +277,12 @@ class ServiceDiscovery:
             # Parser l'URL pour extraire host et port
             parsed_url = urlparse(service["url"])
             host = parsed_url.hostname
-            port = parsed_url.port or (443 if parsed_url.scheme == 'https' else 80)
+            
+            # Ne pas ajouter de port pour les URLs de production (railway.app)
+            if "railway.app" in host:
+                port = None
+            else:
+                port = parsed_url.port or (443 if parsed_url.scheme == 'https' else 80)
             
             service_registry.register_service(
                 service_name=service["name"],
@@ -289,7 +294,8 @@ class ServiceDiscovery:
                 metadata={
                     "type": "default",
                     "version": "1.0",
-                    "scheme": parsed_url.scheme
+                    "scheme": parsed_url.scheme,
+                    "is_production": "railway.app" in host
                 }
             )
             logger.info(f"📝 Service enregistré: {service['name']} @ {service['url']}")

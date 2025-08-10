@@ -38,6 +38,11 @@ class ServiceInstance:
     @property
     def url(self) -> str:
         """URL de base du service"""
+        # Pour les URLs Railway, ne pas ajouter le port
+        if "railway.app" in self.host:
+            scheme = self.metadata.get("scheme", "https")
+            return f"{scheme}://{self.host}"
+        # Pour les URLs locales, ajouter le port
         return f"http://{self.host}:{self.port}"
     
     @property
