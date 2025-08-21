@@ -142,6 +142,7 @@ LEGACY_ROUTE_MAPPING = {
     "/api/quotes/": ("documents", "/api/quotes/"),
     "/api/quotes/next-number/": ("documents", "/api/quotes/next_number/"),
     "/api/projects/next-reference/": ("documents", "/api/projects/next-reference/"),
+    "/projects/next-reference/": ("documents", "/api/projects/next-reference/"),
     "/api/quote-items/": ("documents", "/api/quote-items/"),
     "/api/invoices/": ("documents", "/api/invoices/"),
     "/api/invoice-items/": ("documents", "/api/invoice-items/"),
@@ -189,6 +190,12 @@ LEGACY_ROUTE_MAPPING = {
     # Routes pour les conditions de paiement du tenant
     "/api/tenants/payment_terms/": ("tenant", "/api/payment_terms/"),
     "/tenants/payment_terms/": ("tenant", "/api/payment_terms/"),
+    
+    # Routes pour la numérotation des documents du tenant
+    "/api/tenants/preview-numbering/": ("tenant", "/api/tenants/preview-numbering/"),
+    "/tenants/preview-numbering/": ("tenant", "/api/tenants/preview-numbering/"),
+    "/api/tenants/document_numbering/": ("tenant", "/api/tenants/document_numbering/"),
+    "/tenants/document_numbering/": ("tenant", "/api/tenants/document_numbering/"),
     
     # Routes auth/tenants sans préfixe /api/
     "/auth/tenants/{tenant_id}/": ("tenant", "/api/tenants/current_tenant_info/"),  # Redirection vers current_tenant_info pour la mise à jour

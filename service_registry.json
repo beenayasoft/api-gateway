@@ -10,8 +10,8 @@
         "/api/auth/"
       ],
       "status": "healthy",
-      "last_heartbeat": "2025-08-10T18:13:55.738681",
-      "registration_time": "2025-08-10T18:13:54.416451",
+      "last_heartbeat": "2025-08-21T07:29:16.039579",
+      "registration_time": "2025-08-21T07:26:02.054154",
       "metadata": {
         "type": "default",
         "version": "1.0",
@@ -31,8 +31,8 @@
         "/api/tenants/"
       ],
       "status": "healthy",
-      "last_heartbeat": "2025-08-10T18:13:55.738550",
-      "registration_time": "2025-08-10T18:13:54.417367",
+      "last_heartbeat": "2025-08-21T07:29:16.036521",
+      "registration_time": "2025-08-21T07:26:02.055691",
       "metadata": {
         "type": "default",
         "version": "1.0",
@@ -54,8 +54,8 @@
         "/api/opportunities/"
       ],
       "status": "healthy",
-      "last_heartbeat": "2025-08-10T18:13:55.738783",
-      "registration_time": "2025-08-10T18:13:54.418113",
+      "last_heartbeat": "2025-08-21T07:29:16.038165",
+      "registration_time": "2025-08-21T07:26:02.057465",
       "metadata": {
         "type": "default",
         "version": "1.0",
@@ -76,8 +76,35 @@
         "/api/categories/"
       ],
       "status": "healthy",
-      "last_heartbeat": "2025-08-10T18:13:55.736511",
-      "registration_time": "2025-08-10T18:13:54.418794",
+      "last_heartbeat": "2025-08-21T07:29:16.040752",
+      "registration_time": "2025-08-21T07:26:02.060043",
+      "metadata": {
+        "type": "default",
+        "version": "1.0",
+        "scheme": "http",
+        "is_production": false
+      }
+    }
+  },
+  "documents": {
+    "documents-1": {
+      "service_name": "documents",
+      "instance_id": "documents-1",
+      "host": "localhost",
+      "port": 8004,
+      "health_endpoint": "/health/",
+      "routes": [
+        "/api/quotes/",
+        "/api/invoices/",
+        "/api/projects/",
+        "/api/devis/",
+        "/api/factures/",
+        "/quotes/",
+        "/invoices/"
+      ],
+      "status": "healthy",
+      "last_heartbeat": "2025-08-21T07:29:16.038407",
+      "registration_time": "2025-08-21T07:26:02.058688",
       "metadata": {
         "type": "default",
         "version": "1.0",

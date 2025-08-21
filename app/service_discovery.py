@@ -143,6 +143,8 @@ class ServiceDiscovery:
             'documents': {
                 '/api/devis/': '/api/quotes/',
                 '/api/factures/': '/api/invoices/',
+                '/quotes/': '/api/quotes/',
+                '/invoices/': '/api/invoices/',
             },
             'library': {
                 '/api/library/': '/api/',
@@ -265,6 +267,11 @@ class ServiceDiscovery:
                 "name": "crm",
                 "url": config('CRM_SERVICE_URL', default='http://localhost:8003'),
                 "routes": ["/api/crm/", "/api/tiers/", "/api/opportunities/"]
+            },
+            {
+                "name": "documents",
+                "url": config('DOCUMENT_SERVICE_URL', default='http://localhost:8004'),
+                "routes": ["/api/quotes/", "/api/invoices/", "/api/projects/", "/api/devis/", "/api/factures/", "/quotes/", "/invoices/"]
             },
             {
                 "name": "library",
