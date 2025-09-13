@@ -39,6 +39,9 @@ LEGACY_ROUTE_MAPPING = {
     "/api/auth/register/": ("auth", "/api/auth/register/"),
     "/api/auth/refresh/": ("auth", "/api/auth/refresh/"),
     "/api/auth/me/": ("auth", "/api/auth/me/"),
+    "/api/auth/profile/": ("auth", "/api/auth/profile/"),
+    "/api/auth/avatar/": ("auth", "/api/auth/avatar/"),
+    "/api/auth/change-password/": ("auth", "/api/auth/change-password/"),
     "/api/auth/users/": ("auth", "/api/auth/users/"),
     "/api/auth/users/{id}/": ("auth", "/api/auth/users/{id}/"),
     
@@ -47,8 +50,14 @@ LEGACY_ROUTE_MAPPING = {
     "/auth/register/": ("auth", "/api/auth/register/"),
     "/auth/refresh/": ("auth", "/api/auth/refresh/"),
     "/auth/me/": ("auth", "/api/auth/me/"),
+    "/auth/profile/": ("auth", "/api/auth/profile/"),
+    "/auth/avatar/": ("auth", "/api/auth/avatar/"),
+    "/auth/change-password/": ("auth", "/api/auth/change-password/"),
     "/auth/users/": ("auth", "/api/auth/users/"),
     "/auth/users/{id}/": ("auth", "/api/auth/users/{id}/"),
+    
+    # Routes pour les fichiers média (avatars)
+    "/media/": ("auth", "/media/"),
     
     # Routes tenant
     "/api/tenants/{tenant_id}/": ("tenant", "/api/tenants/{tenant_id}/"),
@@ -316,4 +325,6 @@ PUBLIC_ROUTES = [
     # "/api/quotes/vat-rates/",  # Supprimé - utiliser endpoint statique
     # Routes publiques pour les tests library service
     "/api/library/health/",
+    # Routes média publiques (avatars)
+    "/media/",
 ]

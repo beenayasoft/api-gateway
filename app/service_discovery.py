@@ -104,7 +104,8 @@ class ServiceDiscovery:
                 # Mapping des noms de service
                 service_mapping = {
                     'auth': 'auth',
-                    'tenants': 'tenant', 
+                    'tenants': 'tenant',
+                    'tenant-settings': 'tenant',  # Ajouter mapping pour tenant-settings
                     'crm': 'crm',
                     'tiers': 'crm',
                     'opportunities': 'crm',
